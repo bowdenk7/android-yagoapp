@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/background"
+    android:weightSum="4"
     android:orientation="vertical" >
     <TextView 
         android:id="@+id/present_points"
@@ -12,8 +13,9 @@
         android:textColor="@android:color/white"
         android:textSize="70sp"
         android:textStyle="bold"
+        android:layout_weight="0.1"
         android:gravity="center_horizontal"
-        android:layout_marginTop="30dp"
+        
         />
 	<TextView 
 	    android:id="@+id/lifetime_point"
@@ -23,10 +25,10 @@
         android:textColor="@android:color/white"
         android:textSize="20sp"
         android:gravity="center_horizontal"
-        android:layout_marginTop="20dp"
+        android:layout_weight="0.1"
 	    />
 	<LinearLayout
-	    android:layout_marginTop="50dp"
+	    android:layout_weight="1"
         android:id="@+id/social_media_layout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/footer_bar_size"
@@ -72,7 +74,10 @@
 	<ImageView 
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:layout_margin="50dp"
+	    android:layout_weight="1"
+	    android:layout_marginLeft="50dp"
+	    android:layout_marginRight="50dp"
+	    android:layout_marginBottom="50dp"
 	    android:layout_gravity="center"
 	    android:src="@drawable/invite_friend"
 	    />

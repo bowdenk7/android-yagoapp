@@ -1,9 +1,11 @@
 package app.nightlife.yago;
 
 import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 
 public class LoginScreen extends ActionBarActivity {
@@ -11,9 +13,12 @@ public class LoginScreen extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login_screen);
     }
-
+    public void goToFBLogin(View view){
+    	Intent intent=new Intent(this, AgeConfirmationActivity.class);
+    	startActivity(intent);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

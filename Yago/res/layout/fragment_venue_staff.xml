@@ -5,10 +5,11 @@
     android:orientation="vertical"
     android:background="@drawable/promotion_background" >
 	<ImageView
-        android:id="@+id/yoga_logo"
+        android:id="@+id/yoga_logo_staff"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
+        android:onClick="goToVenueFeedFragment"
         android:src="@drawable/staff_tap" />
 </RelativeLayout>
