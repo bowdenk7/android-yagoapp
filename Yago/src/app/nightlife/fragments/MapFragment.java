@@ -1,40 +1,53 @@
 package app.nightlife.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import app.nightlife.contents.MapContent;
+import app.nightlife.utilities.JsonParser;
+import app.nightlife.utilities.WebServicesLinks;
 import app.nightlife.yago.MainActivity;
 import app.nightlife.yago.R;
-import app.nightlife.yago.R.id;
-import app.nightlife.yago.R.layout;
+import app.nightlife.utilities.GPSTracker;
+import app.nightlife.contents.StaticVariables;
 
 public class MapFragment extends Fragment {
 	private MapView mMapView;
-
+	List<MapContent> mapList;
 	private GoogleMap googleMap;
+	double curLat, curLong;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_map, container, false);
+		StaticVariables.activatedFragment=StaticVariables.fragments[0];
 		ImageView back=(ImageView)getActivity().findViewById(R.id.back);
 		TextView dynamic_text=(TextView)getActivity().findViewById(R.id.dynamic_text);
 		back.setVisibility(View.INVISIBLE);
@@ -49,37 +62,63 @@ public class MapFragment extends Fragment {
 		
 		mMapView = (MapView) rootView.findViewById(R.id.map_district);
 		mMapView.onCreate(savedInstanceState);
-
+		mapList=new ArrayList<MapContent>();
 		mMapView.onResume(); 
+		new LocationFeedAsync(getActivity()).execute();
 		return rootView;
 	}
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-
+	
+	public void markersOnMap(){
 		try {
 			MapsInitializer.initialize(getActivity().getApplicationContext());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		GPSTracker gps = new GPSTracker(getActivity());
 
+		// check if GPS enabled
+		if (gps.canGetLocation()) {
+
+			curLat = gps.getLatitude();
+			curLong = gps.getLongitude();
+		}
+		else {
+			// can't get location
+			// GPS or Network is not enabled
+			// Ask user to enable GPS/network in settings
+			gps.showSettingsAlert();
+		}
 		mMapView.getMapAsync(new OnMapReadyCallback() {
 			@Override
 			public void onMapReady(GoogleMap arg0) {
 				// TODO Auto-generated method stub
 				googleMap = arg0;
+				Log.w("map list size", mapList.size()+"");
+				if(mapList.size()>0){
+					
+					MarkerOptions[] marker = new MarkerOptions[mapList.size()];
+					for(int i=0;i<mapList.size();i++){
+					String pk=mapList.get(i).getPk();
+					String name=mapList.get(i).getName();
+					String pos=mapList.get(i).getPosition();
+					String distance=mapList.get(i).getDistance();
+					
+					double lati=Double.parseDouble(pos.split(",")[0]);
+					double longi=Double.parseDouble(pos.split(",")[1]);
+					// create marker
+					marker[i] = new MarkerOptions().position(
+							new LatLng(lati, longi)).title(name).snippet(distance+"-"+pk);
 
-				// create marker
-				MarkerOptions marker1 = new MarkerOptions().position(
-						new LatLng(52.5167, 13.3833)).title("Berlin");
+					// Changing marker icon
+					//marker[i].icon(BitmapDescriptorFactory.fromResource(R.drawable.local_1));
+					
 
-				// Changing marker icon
-				//marker1.icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker));
-
-				// adding marker
-				googleMap.addMarker(marker1);
+					// adding marker
+					googleMap.addMarker(marker[i]);
+					}
+				}
 				CameraPosition cameraPosition = new CameraPosition.Builder()
-				.target(new LatLng(52.5167, 13.3833)).zoom(6).build();
+				.target(new LatLng(curLat, curLong)).zoom(6).build();
 				googleMap.animateCamera(CameraUpdateFactory
 						.newCameraPosition(cameraPosition));
 
@@ -94,7 +133,11 @@ public class MapFragment extends Fragment {
 					@Override
 					public void onInfoWindowClick(Marker arg0) {
 						// TODO Auto-generated method stub
+						String snippet=arg0.getSnippet();
+						String title=arg0.getTitle();
+						Log.w("Snippet + Title",snippet+"-"+title);
 						MainActivity.fragment = new VenueFeedFragment();
+						StaticVariables.map_district_id=snippet.split("-")[1];
 						MainActivity.fragmentManager.beginTransaction().replace(R.id.fragment_load, MainActivity.fragment).commit();
 
 					}
@@ -103,6 +146,67 @@ public class MapFragment extends Fragment {
 
 			}
 		});
+	}
+	public class LocationFeedAsync extends AsyncTask<String, Void, String> {
+		private Context context;
+		public LocationFeedAsync(Context context) {
+			this.context = context;
+		}
+		@Override
+		public void onPreExecute() {
+			super.onPreExecute();
+		}
+		@Override
+		public String doInBackground(String... arg0) {
+			/*
+			 * Will make http call here This call will download required data
+			 */
+			Log.i("Response: ", "Start background");
+			String url = WebServicesLinks.location_feed+"33.3333,35.2345";
+			url = url.replace(" ", "%20");
+			url=url.replace("\n", "%0A");
+			JsonParser jsonParser = new JsonParser();
+			String json = jsonParser
+					.getJSONFromUrl(url);
+
+			Log.i("Response: ", "after calling json ");
+			Log.i("Response: ", "> " + json);
+			if (json != null) {
+				try {
+					JSONArray dataArray = new JSONArray(json);
+					if(dataArray.length()>0){
+						
+						for(int i=0; i<dataArray.length();i++){
+							JSONObject dataIndex = dataArray.getJSONObject(i);
+							MapContent mapCon=new MapContent();
+							mapCon.setPk( dataIndex.getString("pk"));
+							mapCon.setName(dataIndex.getString("name"));
+							mapCon.setPosition(dataIndex.getString("position"));
+							mapCon.setDistance(dataIndex.getString("distance"));
+							mapList.add(mapCon);
+						}
+						Log.w("position name",mapList.get(0).getName()+"--"+mapList.get(1).getName());
+					}
+					else{
+						
+					}
+				}
+				catch(JSONException e){
+					e.getStackTrace();
+				}
+			}
+
+			return json;
+		}
+
+		@SuppressLint("ShowToast")
+		@Override
+		public void onPostExecute(String result) {
+			super.onPostExecute(result);
+			markersOnMap();
+			Log.w("result",result);
+
+		}
 	}
 
 }

@@ -2,12 +2,13 @@
              android:layout_width="match_parent"
              android:layout_height="wrap_content">
 
-    <app.nightlife.views.SquareImageView
+     <com.android.volley.toolbox.NetworkImageView
         android:id="@+id/picture"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"/>
-
+        android:layout_width="200dp"
+        android:layout_height="250dp"
+        android:scaleType="centerCrop"
+        />
+    
     <TextView
         android:id="@+id/text"
         android:layout_width="match_parent"
@@ -19,7 +20,8 @@
         android:layout_gravity="bottom"
         android:gravity="center"
         android:text="HAVANA CLUB"
-        android:textColor="@android:color/white"
-        android:background="#55000000"/>
+        android:background="@android:color/white"
+        android:textColor="@android:color/black"
+        />
 
 </FrameLayout>
