@@ -21,62 +21,62 @@ import app.nightlife.yago.R.id;
 import app.nightlife.yago.R.layout;
 
 public class GridViewAdapter extends BaseAdapter {
-    private List<VenueContent> mItems = new ArrayList<VenueContent>();
-    private final LayoutInflater mInflater;
-    ImageLoader imageLoader;
-    public GridViewAdapter(Context context, List<VenueContent> vList) {
-        mInflater = LayoutInflater.from(context);
-        mItems=vList;
-    }
+	private List<VenueContent> mItems = new ArrayList<VenueContent>();
+	private final LayoutInflater mInflater;
+	ImageLoader imageLoader;
+	public GridViewAdapter(Context context, List<VenueContent> vList) {
+		mInflater = LayoutInflater.from(context);
+		mItems=vList;
+	}
 
-    @Override
-    public int getCount() {
-        return mItems.size();
-    }
+	@Override
+	public int getCount() {
+		return mItems.size();
+	}
 
-    @Override
-    public VenueContent getItem(int i) {
-        return mItems.get(i);
-    }
+	@Override
+	public VenueContent getItem(int i) {
+		return mItems.get(i);
+	}
 
-    @Override
-    public long getItemId(int pos) {
-        return pos;
-    }
+	@Override
+	public long getItemId(int pos) {
+		return pos;
+	}
 
-    @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        View v = view;
-        NetworkImageView event_image;
-        TextView name;
+	@Override
+	public View getView(int i, View view, ViewGroup viewGroup) {
+		View v = view;
+		NetworkImageView event_image;
+		TextView name;
 
-        if (v == null) {
-            v = mInflater.inflate(R.layout.grid_item, viewGroup, false);
-            v.setTag(R.id.picture, v.findViewById(R.id.picture));
-            v.setTag(R.id.text, v.findViewById(R.id.text));
-        }
-        if (imageLoader == null){
+		if (v == null) {
+			v = mInflater.inflate(R.layout.grid_item, viewGroup, false);
+			v.setTag(R.id.picture, v.findViewById(R.id.picture));
+			v.setTag(R.id.text, v.findViewById(R.id.text));
+		}
+		if (imageLoader == null){
 			imageLoader = AppController.getInstance().getImageLoader();
 		}
-        event_image = (NetworkImageView) v
+		event_image = (NetworkImageView) v
 				.findViewById(R.id.picture);
-		
-        name = (TextView) v.getTag(R.id.text);
 
-        VenueContent item = getItem(i);
-        event_image.setImageUrl(item.getLogo_url(), imageLoader);
-        name.setText(item.getName());
+		name = (TextView) v.getTag(R.id.text);
 
-        return v;
-    }
+		VenueContent item = getItem(i);
+		event_image.setImageUrl(item.getLogo_url(), imageLoader);
+		name.setText(item.getName());
 
-    private static class Item {
-        public final String name;
-        public final int drawableId;
+		return v;
+	}
 
-        Item(String name, int drawableId) {
-            this.name = name;
-            this.drawableId = drawableId;
-        }
-    }
+	private static class Item {
+		public final String name;
+		public final int drawableId;
+
+		Item(String name, int drawableId) {
+			this.name = name;
+			this.drawableId = drawableId;
+		}
+	}
 }

@@ -23,6 +23,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import app.nightlife.contents.EventContent;
+import app.nightlife.fragments.EventsFragment.RecentDistrictPostsAsync;
 import app.nightlife.utilities.AppController;
 import app.nightlife.utilities.WebServicesLinks;
 import app.nightlife.yago.R;
@@ -67,7 +69,7 @@ public class EventAdapter extends BaseAdapter {
 	@Override
 	public View getView(final int pos, View convertView, ViewGroup parent) {
 		final EventContent ec = mEc.get(pos);
-		
+
 		if(convertView == null)
 		{
 			LayoutInflater inflater = LayoutInflater.from(mContext);
@@ -79,17 +81,23 @@ public class EventAdapter extends BaseAdapter {
 		}
 		TextView eventTime = (TextView)convertView.findViewById(R.id.time);
 		eventTime.setText(ec.getEvent_time_text());
-		
+
 		eventLikes = (TextView)convertView.findViewById(R.id.likes);
 		eventLikes.setText(ec.getEvent_like_count());
 		eventLikes.setTag(pos);
 		eventLikes.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Log.w("clicked at ", pos+"");
-				new PostLike(mContext, ec.getEvent_id()).execute();
+				if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB){
+					new PostLike(mContext, ec.getEvent_id()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+				}
+				else{
+					new PostLike(mContext, ec.getEvent_id()).execute();
+				}
+				
 				//eventLikes.setText("1");
 			}
 		});
@@ -99,43 +107,43 @@ public class EventAdapter extends BaseAdapter {
 		event_image.setImageUrl(imgUrl, imageLoader);
 		return convertView;
 	}
-	
+
 	class PostLike extends AsyncTask<String, Void, String> {
 
-		
+
 		String post_id;
 		public PostLike(Context context, String post_id) {
 			this.post_id=post_id;
 		}
-		
+
 		@Override
 		protected void onPreExecute() {
 		}
 
 		public String likePosMethod() {
-			
+
 			System.setProperty("http.keepAlive", "true");
 			String json = "";
-			
+
 			// Create Post Header
-			
+
 			HttpPost httppost = new HttpPost(WebServicesLinks.like_post);
 			httppost.addHeader("Content-type", "application/json");
-			
+
 			try {
-			    // Add your data
-			    //List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-			    //nameValuePairs.add(new BasicNameValuePair("post",post_id ));
-			    JSONObject dato = new JSONObject();
-			    dato.put("post", post_id);
-			    StringEntity entity = new StringEntity(dato.toString());
-			    //httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-			    httppost.setEntity(entity);
-			    // Execute HTTP Post Request
-			    HttpResponse response = WebServicesLinks.httpClient.execute(httppost);
-			    
-		    	HttpEntity entity1 = response.getEntity();
-		    	
+				// Add your data
+				//List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+				//nameValuePairs.add(new BasicNameValuePair("post",post_id ));
+				JSONObject dato = new JSONObject();
+				dato.put("post", post_id);
+				StringEntity entity = new StringEntity(dato.toString());
+				//httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+				httppost.setEntity(entity);
+				// Execute HTTP Post Request
+				HttpResponse response = WebServicesLinks.httpClient.execute(httppost);
+
+				HttpEntity entity1 = response.getEntity();
+
 
 				InputStream is = entity1.getContent();
 
@@ -143,22 +151,22 @@ public class EventAdapter extends BaseAdapter {
 				Log.w("JSON",json);
 			} 
 			catch (ClientProtocolException e) {
-			    // TODO Auto-generated catch block
+				// TODO Auto-generated catch block
 			} 
 			catch (IOException e) {
-			    // TODO Auto-generated catch block
+				// TODO Auto-generated catch block
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			return json;
 		} 
-	
+
 
 		@Override
 		protected String doInBackground(String... arg0) {
-			
+
 			String answer = likePosMethod();
 			return answer;
 		}
@@ -168,13 +176,13 @@ public class EventAdapter extends BaseAdapter {
 		protected void onPostExecute(String result) {
 			Log.w("result1",result);
 			try{
-			JSONObject data = new JSONObject(result);
-			String likes=data.getString("total_likes");
-			eventLikes.setText(likes);
-			notifyDataSetChanged();
+				JSONObject data = new JSONObject(result);
+				String likes=data.getString("total_likes");
+				eventLikes.setText(likes);
+				notifyDataSetChanged();
 			}
 			catch(Exception e){
-				
+
 			}
 		} 
 	}

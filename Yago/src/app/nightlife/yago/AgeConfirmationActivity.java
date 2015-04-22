@@ -12,7 +12,7 @@ public class AgeConfirmationActivity extends Activity{
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_age_confirm);
-		
+
 	}
 	public void goToMainActivity(View view){
 		Intent intent=new Intent(this, MainActivity.class);

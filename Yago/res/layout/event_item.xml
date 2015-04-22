@@ -10,8 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="3"
-        android:scaleType="fitXY"
-        />
+        android:scaleType="fitXY" />
 
     <LinearLayout
         android:id="@+id/event_detail_bar"
@@ -52,8 +51,8 @@
             android:layout_weight="1"
             android:drawableLeft="@drawable/likes"
             android:gravity="center"
-            android:paddingBottom="10dp"
             android:onClick="onLike"
+            android:paddingBottom="10dp"
             android:text="13"
             android:textSize="20dp" />
     </LinearLayout>

@@ -19,8 +19,8 @@
             android:layout_gravity="left|center_vertical"
             android:layout_weight="1"
             android:padding="10dp"
-            android:visibility="invisible"
-            android:src="@drawable/back" />
+            android:src="@drawable/back"
+            android:visibility="invisible" />
 
         <ImageView
             android:id="@+id/header_logo"
@@ -44,12 +44,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:padding="5dp"
             android:onClick="addPost"
+            android:padding="5dp"
             android:src="@drawable/camera" />
     </LinearLayout>
-	<FrameLayout
-       android:id="@+id/fragment_load"
+
+    <FrameLayout
+        android:id="@+id/fragment_load"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/footer"
@@ -70,8 +71,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:padding="16dp"
             android:onClick="goToProfileFragment"
+            android:padding="16dp"
             android:src="@drawable/profile_icon" />
 
         <ImageView
@@ -80,8 +81,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:padding="15dp"
             android:onClick="goToVenueFragment"
+            android:padding="15dp"
             android:src="@drawable/yago_bottom_icon" />
 
         <ImageView
@@ -90,8 +91,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:padding="16dp"
             android:onClick="goToPromotionFragment"
+            android:padding="16dp"
             android:src="@drawable/money_bag" />
     </LinearLayout>
 

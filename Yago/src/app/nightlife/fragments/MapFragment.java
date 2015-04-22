@@ -22,6 +22,7 @@ import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,42 +53,48 @@ public class MapFragment extends Fragment {
 		TextView dynamic_text=(TextView)getActivity().findViewById(R.id.dynamic_text);
 		back.setVisibility(View.INVISIBLE);
 		dynamic_text.setText("Map");
-		
+
 		ImageView profileImage=(ImageView)getActivity().findViewById(R.id.profile_icon);
 		profileImage.setBackgroundResource(android.R.color.transparent); 
 		ImageView yagoImage=(ImageView)getActivity().findViewById(R.id.yago_icon);
 		yagoImage.setBackgroundResource(android.R.color.background_dark);
 		ImageView moneyImage=(ImageView)getActivity().findViewById(R.id.money_bag);
 		moneyImage.setBackgroundResource(android.R.color.transparent);
-		
+
 		mMapView = (MapView) rootView.findViewById(R.id.map_district);
 		mMapView.onCreate(savedInstanceState);
 		mapList=new ArrayList<MapContent>();
 		mMapView.onResume(); 
-		new LocationFeedAsync(getActivity()).execute();
+		if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB){
+			new LocationFeedAsync(getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		}
+		else{
+			new LocationFeedAsync(getActivity()).execute();
+		}
+		
 		return rootView;
 	}
-	
+
 	public void markersOnMap(){
 		try {
 			MapsInitializer.initialize(getActivity().getApplicationContext());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		GPSTracker gps = new GPSTracker(getActivity());
-
-		// check if GPS enabled
-		if (gps.canGetLocation()) {
-
-			curLat = gps.getLatitude();
-			curLong = gps.getLongitude();
-		}
-		else {
-			// can't get location
-			// GPS or Network is not enabled
-			// Ask user to enable GPS/network in settings
-			gps.showSettingsAlert();
-		}
+//		GPSTracker gps = new GPSTracker(getActivity());
+//
+//		// check if GPS enabled
+//		if (gps.canGetLocation()) {
+//
+//			curLat = gps.getLatitude();
+//			curLong = gps.getLongitude();
+//		}
+//		else {
+//			// can't get location
+//			// GPS or Network is not enabled
+//			// Ask user to enable GPS/network in settings
+//			gps.showSettingsAlert();
+//		}
 		mMapView.getMapAsync(new OnMapReadyCallback() {
 			@Override
 			public void onMapReady(GoogleMap arg0) {
@@ -95,26 +102,26 @@ public class MapFragment extends Fragment {
 				googleMap = arg0;
 				Log.w("map list size", mapList.size()+"");
 				if(mapList.size()>0){
-					
+
 					MarkerOptions[] marker = new MarkerOptions[mapList.size()];
 					for(int i=0;i<mapList.size();i++){
-					String pk=mapList.get(i).getPk();
-					String name=mapList.get(i).getName();
-					String pos=mapList.get(i).getPosition();
-					String distance=mapList.get(i).getDistance();
-					
-					double lati=Double.parseDouble(pos.split(",")[0]);
-					double longi=Double.parseDouble(pos.split(",")[1]);
-					// create marker
-					marker[i] = new MarkerOptions().position(
-							new LatLng(lati, longi)).title(name).snippet(distance+"-"+pk);
+						String pk=mapList.get(i).getPk();
+						String name=mapList.get(i).getName();
+						String pos=mapList.get(i).getPosition();
+						String distance=mapList.get(i).getDistance();
 
-					// Changing marker icon
-					//marker[i].icon(BitmapDescriptorFactory.fromResource(R.drawable.local_1));
-					
+						double lati=Double.parseDouble(pos.split(",")[0]);
+						double longi=Double.parseDouble(pos.split(",")[1]);
+						// create marker
+						marker[i] = new MarkerOptions().position(
+								new LatLng(lati, longi)).title(name).snippet(distance+"-"+pk);
 
-					// adding marker
-					googleMap.addMarker(marker[i]);
+						// Changing marker icon
+						//marker[i].icon(BitmapDescriptorFactory.fromResource(R.drawable.local_1));
+
+
+						// adding marker
+						googleMap.addMarker(marker[i]);
 					}
 				}
 				CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -175,7 +182,7 @@ public class MapFragment extends Fragment {
 				try {
 					JSONArray dataArray = new JSONArray(json);
 					if(dataArray.length()>0){
-						
+
 						for(int i=0; i<dataArray.length();i++){
 							JSONObject dataIndex = dataArray.getJSONObject(i);
 							MapContent mapCon=new MapContent();
@@ -188,7 +195,7 @@ public class MapFragment extends Fragment {
 						Log.w("position name",mapList.get(0).getName()+"--"+mapList.get(1).getName());
 					}
 					else{
-						
+
 					}
 				}
 				catch(JSONException e){

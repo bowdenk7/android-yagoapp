@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:gravity="center_horizontal"
-            android:text="36"
+            android:text="0"
             android:textColor="@android:color/white"
             android:textSize="60dp"
             android:textStyle="bold" />
@@ -182,7 +182,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/time_layout"
             android:layout_centerHorizontal="true"
-            
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp"
             android:src="@drawable/send_promo_to_friend" />

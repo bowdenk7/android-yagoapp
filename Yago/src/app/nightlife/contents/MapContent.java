@@ -5,7 +5,7 @@ public class MapContent {
 	String name;
 	String position;
 	String distance;
-	
+
 	public String getPk() {
 		return pk;
 	}
@@ -30,6 +30,6 @@ public class MapContent {
 	public void setDistance(String distance) {
 		this.distance = distance;
 	}
-	
+
 
 }

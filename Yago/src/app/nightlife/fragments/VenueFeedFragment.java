@@ -11,6 +11,7 @@ import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import app.nightlife.adapters.GridViewAdapter;
+
 import app.nightlife.utilities.JsonParser;
 import app.nightlife.utilities.WebServicesLinks;
 import app.nightlife.yago.MainActivity;
@@ -48,7 +50,7 @@ public class VenueFeedFragment extends Fragment {
 		dynamic_text.setText("Venue");
 		venuesList=new ArrayList<VenueContent>();
 		back.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -67,15 +69,21 @@ public class VenueFeedFragment extends Fragment {
 		gvAdapter.notifyDataSetChanged();
 		gridView.setOnItemClickListener(new OnItemClickListener()
 		{
-		    @Override
-		    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-		    {
-		    	MainActivity.fragment = new EventsFragment();
-		    	StaticVariables.district_venue_id=venuesList.get(position).getPk();
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+			{
+				MainActivity.fragment = new EventsFragment();
+				StaticVariables.district_venue_id=venuesList.get(position).getPk();
 				MainActivity.fragmentManager.beginTransaction().replace(R.id.fragment_load, MainActivity.fragment).commit();
-		    }
+			}
 		});
-		new TopDistrictFeedAsync(getActivity()).execute();
+		if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB){
+			new TopDistrictFeedAsync(getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		}
+		else{
+			new TopDistrictFeedAsync(getActivity()).execute();
+		}
+		
 		return rootView;
 	}
 	public class TopDistrictFeedAsync extends AsyncTask<String, Void, String> {
@@ -107,7 +115,7 @@ public class VenueFeedFragment extends Fragment {
 				try {
 					JSONArray dataArray = new JSONArray(json);
 					if(dataArray.length()>0){
-						
+
 						for(int i=0; i<dataArray.length();i++){
 							JSONObject dataIndex = dataArray.getJSONObject(i);
 							VenueContent venueCon=new VenueContent();
@@ -121,7 +129,7 @@ public class VenueFeedFragment extends Fragment {
 						Log.w("position name",venuesList.get(0).getName()+"--"+venuesList.get(1).getName());
 					}
 					else{
-						
+
 					}
 				}
 				catch(JSONException e){
@@ -140,5 +148,5 @@ public class VenueFeedFragment extends Fragment {
 
 		}
 	}
-	
+
 }
