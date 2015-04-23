@@ -5,18 +5,14 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import ch.boye.httpclientandroidlib.HttpEntity;
 import ch.boye.httpclientandroidlib.HttpResponse;
 import ch.boye.httpclientandroidlib.client.ClientProtocolException;
-import ch.boye.httpclientandroidlib.client.HttpClient;
 import ch.boye.httpclientandroidlib.client.methods.HttpPost;
 import ch.boye.httpclientandroidlib.entity.StringEntity;
-import ch.boye.httpclientandroidlib.impl.client.DefaultHttpClient;
-
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import android.annotation.SuppressLint;
@@ -32,12 +28,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import app.nightlife.contents.EventContent;
-import app.nightlife.fragments.EventsFragment.RecentDistrictPostsAsync;
 import app.nightlife.utilities.AppController;
 import app.nightlife.utilities.WebServicesLinks;
 import app.nightlife.yago.R;
-import app.nightlife.yago.R.id;
-import app.nightlife.yago.R.layout;
 
 public class EventAdapter extends BaseAdapter {
 	private Activity mContext;

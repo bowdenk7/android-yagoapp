@@ -138,8 +138,9 @@ public class EventsFragment extends Fragment {
 			 */
 			Log.i("Response: ", "Start background");
 			Log.i("selected distric venue: ", StaticVariables.district_venue_id);
-
-			String url = WebServicesLinks.recent_district_posts+StaticVariables.district_venue_id;
+			
+			String url = WebServicesLinks.recent_venue_posts+StaticVariables.district_venue_id;
+			//String url = WebServicesLinks.recent_district_posts+StaticVariables.district_venue_id;
 			//String url = WebServicesLinks.closest_venues+"33.3333,120.2345";
 			//String url = WebServicesLinks.top_district_feed+"1";
 

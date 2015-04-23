@@ -43,6 +43,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import app.nightlife.contents.StaticVariables;
+import app.nightlife.utilities.GPSTracker;
 import app.nightlife.utilities.WebServicesLinks;
 
 
@@ -64,6 +65,20 @@ public class LoginScreen extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login_screen);
+		GPSTracker gps = new GPSTracker(this);
+
+		// check if GPS enabled
+		if (gps.canGetLocation()) {
+
+			StaticVariables.curLatitude = gps.getLatitude();
+			StaticVariables.curLongitude = gps.getLongitude();
+		}
+		else {
+			// can't get location
+			// GPS or Network is not enabled
+			// Ask user to enable GPS/network in settings
+			gps.showSettingsAlert();
+		}
 		facebook = new Facebook(APP_ID);
 		mAsyncRunner = new AsyncFacebookRunner(facebook);
 	}

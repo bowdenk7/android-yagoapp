@@ -53,6 +53,7 @@ import app.nightlife.utilities.WebServicesLinks;
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.header_content_footer_layout);
+		
 		fragmentManager = getFragmentManager();
 		
 		StaticVariables.spinnerLayout=(LinearLayout) findViewById(R.id.spinnerLayout);

@@ -15,6 +15,7 @@ public class WebServicesLinks {
 	//get call
 	public static String location_feed=domain+"/feed/location_feed/";
 
+	public static String recent_venue_posts=domain+"/post/recent_venue_posts/";
 	//get call
 	public static String top_district_feed=domain+"/feed/top_district_feed/";
 

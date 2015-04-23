@@ -1,6 +1,7 @@
 package app.nightlife.fragments;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -42,7 +43,7 @@ public class MapFragment extends Fragment {
 	private MapView mMapView;
 	List<MapContent> mapList;
 	private GoogleMap googleMap;
-	double curLat, curLong;
+	private HashMap<Marker, MapContent> districtMarkerMap;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -110,28 +111,32 @@ public class MapFragment extends Fragment {
 				if(mapList.size()>0){
 
 					MarkerOptions[] marker = new MarkerOptions[mapList.size()];
+					 districtMarkerMap = new HashMap<Marker, MapContent>();
 					for(int i=0;i<mapList.size();i++){
-						String pk=mapList.get(i).getPk();
-						String name=mapList.get(i).getName();
-						String pos=mapList.get(i).getPosition();
-						String distance=mapList.get(i).getDistance();
-
-						double lati=Double.parseDouble(pos.split(",")[0]);
-						double longi=Double.parseDouble(pos.split(",")[1]);
-						// create marker
-						marker[i] = new MarkerOptions().position(
-								new LatLng(lati, longi)).title(name).snippet(distance+"-"+pk);
-
-						// Changing marker icon
-						//marker[i].icon(BitmapDescriptorFactory.fromResource(R.drawable.local_1));
-
-
-						// adding marker
-						googleMap.addMarker(marker[i]);
+						Marker place_marker = placeMarker(mapList.get(i));
+						districtMarkerMap.put(place_marker, mapList.get(i));
+//						String pk=mapList.get(i).getPk();
+//						String name=mapList.get(i).getName();
+//						String pos=mapList.get(i).getPosition();
+//						String distance=mapList.get(i).getDistance();
+//
+//						double lati=Double.parseDouble(pos.split(",")[0]);
+//						double longi=Double.parseDouble(pos.split(",")[1]);
+//						// create marker
+//						marker[i] = new MarkerOptions().position(
+//								new LatLng(lati, longi)).title(name).snippet(pk);
+//						
+//						// Changing marker icon
+//						//marker[i].icon(BitmapDescriptorFactory.fromResource(R.drawable.local_1));
+//
+//
+//						// adding marker
+//						googleMap.addMarker(marker[i]);
+						
 					}
 				}
 				CameraPosition cameraPosition = new CameraPosition.Builder()
-				.target(new LatLng(curLat, curLong)).zoom(6).build();
+				.target(new LatLng(StaticVariables.curLatitude, StaticVariables.curLongitude)).zoom(6).build();
 				googleMap.animateCamera(CameraUpdateFactory
 						.newCameraPosition(cameraPosition));
 
@@ -146,11 +151,12 @@ public class MapFragment extends Fragment {
 					@Override
 					public void onInfoWindowClick(Marker arg0) {
 						// TODO Auto-generated method stub
-						String snippet=arg0.getSnippet();
-						String title=arg0.getTitle();
-						Log.w("Snippet + Title",snippet+"-"+title);
+						 MapContent mapInfo = districtMarkerMap.get(arg0);
+//						String snippet=arg0.getSnippet();
+//						String title=arg0.getTitle();
+						//Log.w("Snippet + Title",snippet+"-"+title);
 						MainActivity.fragment = new VenueFeedFragment();
-						StaticVariables.map_district_id=snippet.split("-")[1];
+						StaticVariables.map_district_id=mapInfo.getPk();
 						MainActivity.fragmentManager.beginTransaction().replace(R.id.fragment_load, MainActivity.fragment).commit();
 
 					}
@@ -160,6 +166,25 @@ public class MapFragment extends Fragment {
 			}
 		});
 	}
+	public Marker placeMarker(MapContent mapInfo) {
+		String pk=mapInfo.getPk();
+		String name=mapInfo.getName();
+		String pos=mapInfo.getPosition();
+		String distance=mapInfo.getDistance();
+		double lati=Double.parseDouble(pos.split(",")[0]);
+		double longi=Double.parseDouble(pos.split(",")[1]);
+		
+		  Marker m  = googleMap.addMarker(new MarkerOptions()
+
+		   .position(new LatLng(lati, longi))
+
+		   .title(mapInfo.getName()));
+
+		  
+
+		  return m;
+
+		 }
 	public class LocationFeedAsync extends AsyncTask<String, Void, String> {
 		private Context context;
 		public LocationFeedAsync(Context context) {

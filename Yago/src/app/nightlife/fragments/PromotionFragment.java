@@ -54,7 +54,8 @@ public class PromotionFragment extends Fragment{
 		yagoImage.setBackgroundResource(android.R.color.transparent);
 		ImageView moneyImage=(ImageView)getActivity().findViewById(R.id.money_bag);
 		moneyImage.setBackgroundResource(android.R.color.background_dark);
-
+		TextView total_points=(TextView) rootView.findViewById(R.id.total_points);
+		total_points.setText(StaticVariables.current_points);
 		list = new ArrayList<PromotionContent>();
 //		PromotionContent c1=new PromotionContent();
 //		c1.setPromotion_name("Promo 1");

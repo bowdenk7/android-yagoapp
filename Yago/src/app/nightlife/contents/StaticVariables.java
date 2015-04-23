@@ -13,6 +13,7 @@ public class StaticVariables {
 	public static LinearLayout spinnerLayout;
 	public static LinearLayout headerLayout;
 	public static LinearLayout footerLayout;
-	
+	public static double curLatitude;
+	public static double curLongitude;
 
 }
