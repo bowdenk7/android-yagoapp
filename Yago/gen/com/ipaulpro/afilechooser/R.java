@@ -22,7 +22,7 @@ public final class R {
 		public static final int ic_provider = 0x7f0200b1;
 	}
 	public static final class layout {
-		public static final int file = 0x7f03002a;
+		public static final int file = 0x7f03002b;
 	}
 	public static final class string {
 		public static final int choose_file = 0x7f090002;

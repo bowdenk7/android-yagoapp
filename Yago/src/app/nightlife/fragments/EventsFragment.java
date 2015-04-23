@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,6 +57,7 @@ public class EventsFragment extends Fragment {
 	EventAdapter adapter;
 	TextView no_event;
 	TextView likes;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -96,9 +98,15 @@ public class EventsFragment extends Fragment {
 		eventsListView.setAdapter(adapter);
 		adapter.notifyDataSetChanged();
 		if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB){
+			StaticVariables.spinnerLayout.setVisibility(View.GONE);
+			StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.footerLayout.setVisibility(View.VISIBLE);
 			new RecentDistrictPostsAsync(getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		}
 		else{
+			StaticVariables.spinnerLayout.setVisibility(View.GONE);
+			StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.footerLayout.setVisibility(View.VISIBLE);
 			new RecentDistrictPostsAsync(getActivity()).execute();
 		}
 		
@@ -112,7 +120,12 @@ public class EventsFragment extends Fragment {
 	//	}
 	public class RecentDistrictPostsAsync extends AsyncTask<String, Void, String> {
 		private String TAG_APPLICATION="application";
+		
 		public RecentDistrictPostsAsync(Context context) {
+			no_event.setVisibility(View.GONE);
+			StaticVariables.spinnerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.headerLayout.setVisibility(View.GONE);
+			StaticVariables.footerLayout.setVisibility(View.GONE);
 		}
 		@Override
 		public void onPreExecute() {
@@ -124,6 +137,7 @@ public class EventsFragment extends Fragment {
 			 * Will make http call here This call will download required data
 			 */
 			Log.i("Response: ", "Start background");
+			Log.i("selected distric venue: ", StaticVariables.district_venue_id);
 
 			String url = WebServicesLinks.recent_district_posts+StaticVariables.district_venue_id;
 			//String url = WebServicesLinks.closest_venues+"33.3333,120.2345";
@@ -180,11 +194,18 @@ public class EventsFragment extends Fragment {
 		@Override
 		public void onPostExecute(String result) {
 			super.onPostExecute(result);
+			StaticVariables.spinnerLayout.setVisibility(View.GONE);
+			StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.footerLayout.setVisibility(View.VISIBLE);
 			//generateNoteOnSD("errorfile.html", result);
 			if(list.size()>0){
 			no_event.setVisibility(View.GONE);
 			eventsListView.setVisibility(View.VISIBLE);
 			adapter.notifyDataSetChanged();
+			}
+			else{
+				no_event.setVisibility(View.VISIBLE);
+				eventsListView.setVisibility(View.GONE);
 			}
 			//Log.w("result",result);
 

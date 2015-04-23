@@ -1,20 +1,14 @@
 package app.nightlife.yago;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.io.IOUtils;
-
-
+import app.nightlife.views.FromXML;
 import ch.boye.httpclientandroidlib.Header;
 import ch.boye.httpclientandroidlib.HttpEntity;
 import ch.boye.httpclientandroidlib.HttpResponse;
@@ -22,9 +16,6 @@ import ch.boye.httpclientandroidlib.client.methods.HttpPost;
 import ch.boye.httpclientandroidlib.entity.mime.HttpMultipartMode;
 import ch.boye.httpclientandroidlib.entity.mime.MultipartEntityBuilder;
 import ch.boye.httpclientandroidlib.entity.mime.content.FileBody;
-
-
-
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -38,19 +29,18 @@ import android.app.FragmentTransaction;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.BitmapFactory;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+import app.nightlife.contents.StaticVariables;
 import app.nightlife.fragments.MapFragment;
 import app.nightlife.fragments.ProfileFragment;
 import app.nightlife.fragments.PromotionFragment;
 import app.nightlife.fragments.VenueFeedFragment;
-import app.nightlife.fragments.MapFragment.LocationFeedAsync;
 import app.nightlife.utilities.WebServicesLinks;
 
 
@@ -64,40 +54,70 @@ import app.nightlife.utilities.WebServicesLinks;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.header_content_footer_layout);
 		fragmentManager = getFragmentManager();
-
+		
+		StaticVariables.spinnerLayout=(LinearLayout) findViewById(R.id.spinnerLayout);
+		StaticVariables.headerLayout=(LinearLayout) findViewById(R.id.header);
+		StaticVariables.footerLayout=(LinearLayout) findViewById(R.id.footer);
+		
 		fragment = new MapFragment();
 		fragmentManager.beginTransaction().replace(R.id.fragment_load, fragment).commit();
 
 	}
 	public void addPost(View view){
-		Intent intent = new Intent();
-		intent.setType("image/*");
-		intent.setAction(Intent.ACTION_GET_CONTENT);
-		startActivityForResult(Intent.createChooser(intent, "Select Picture"),1);
+		//Toast.makeText(getApplicationContext(), "Here", Toast.LENGTH_LONG).show();
+        if(cameraNotDetected()){
+        	
+        	String message = "No camera detected, clicking the button below will have unexpected behaviour.";
+        	Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+        }
+        else{
+        	Intent intent = new Intent(this, CameraActivity.class);
+        	startActivity(intent);
+        }
+        
+//		Intent intent = new Intent();
+//		intent.setType("image/*");
+//		intent.setAction(Intent.ACTION_GET_CONTENT);
+//		startActivityForResult(Intent.createChooser(intent, "Select Picture"),1);
 
 	}
+	private boolean cameraNotDetected() {
+		return !getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+	}
+	@FromXML
+    public void onUseCameraClick(View button){
+    	Intent intent = new Intent(this, CameraActivity.class);
+    	startActivity(intent);
+    }
 	// To handle when an image is selected from the browser, add the following to your Activity
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) { 
-
-		if (resultCode == RESULT_OK) {
-
-			if (requestCode == 1) {
-
-				// currImageURI is the global variable I'm using to hold the content:// URI of the image
-				curImg = data.getData();
-
-				Toast.makeText(getApplicationContext(), curImg.toString(), Toast.LENGTH_LONG).show();
-				if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB){
-					new AddPostAsync(this,getPath(this, curImg)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-				}
-				else{
-					new AddPostAsync(this,getPath(this, curImg)).execute();
-				}
-				
-			}
-		}
-	}
+//	@Override
+//	public void onActivityResult(int requestCode, int resultCode, Intent data) { 
+//
+//		if (resultCode == RESULT_OK) {
+//
+//			if (requestCode == 1) {
+//
+//				// currImageURI is the global variable I'm using to hold the content:// URI of the image
+//				curImg = data.getData();
+//
+//				Toast.makeText(getApplicationContext(), curImg.toString(), Toast.LENGTH_LONG).show();
+//				if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB){
+//					
+//					StaticVariables.spinnerLayout.setVisibility(View.GONE);
+//					StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+//					StaticVariables.footerLayout.setVisibility(View.VISIBLE);
+//					new AddPostAsync(this,getPath(this, curImg)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//				}
+//				else{
+//					StaticVariables.spinnerLayout.setVisibility(View.GONE);
+//					StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+//					StaticVariables.footerLayout.setVisibility(View.VISIBLE);
+//					new AddPostAsync(this,getPath(this, curImg)).execute();
+//				}
+//				
+//			}
+//		}
+//	}
 
 	// And to convert the image URI to the direct file system path of the image file
 	public String getRealPathFromURI(Uri contentUri) {
@@ -137,6 +157,9 @@ import app.nightlife.utilities.WebServicesLinks;
 		public AddPostAsync(Context context,String filename) {
 			this.context = context;
 			this.filename=filename;
+			StaticVariables.spinnerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.headerLayout.setVisibility(View.GONE);
+			StaticVariables.footerLayout.setVisibility(View.GONE);
 		}
 
 		@Override
@@ -161,6 +184,9 @@ import app.nightlife.utilities.WebServicesLinks;
 		@Override
 		protected void onPostExecute(String result) {
 			Log.w("result1",result);
+			StaticVariables.spinnerLayout.setVisibility(View.GONE);
+			StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.footerLayout.setVisibility(View.VISIBLE);
 			Intent intent=new Intent(context, AgeConfirmationActivity.class);
 			startActivity(intent);
 		} 

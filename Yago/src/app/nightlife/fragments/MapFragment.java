@@ -66,9 +66,15 @@ public class MapFragment extends Fragment {
 		mapList=new ArrayList<MapContent>();
 		mMapView.onResume(); 
 		if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB){
+			StaticVariables.spinnerLayout.setVisibility(View.GONE);
+			StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.footerLayout.setVisibility(View.VISIBLE);
 			new LocationFeedAsync(getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		}
 		else{
+			StaticVariables.spinnerLayout.setVisibility(View.GONE);
+			StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.footerLayout.setVisibility(View.VISIBLE);
 			new LocationFeedAsync(getActivity()).execute();
 		}
 		
@@ -158,6 +164,9 @@ public class MapFragment extends Fragment {
 		private Context context;
 		public LocationFeedAsync(Context context) {
 			this.context = context;
+			StaticVariables.spinnerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.headerLayout.setVisibility(View.GONE);
+			StaticVariables.footerLayout.setVisibility(View.GONE);
 		}
 		@Override
 		public void onPreExecute() {
@@ -210,6 +219,9 @@ public class MapFragment extends Fragment {
 		@Override
 		public void onPostExecute(String result) {
 			super.onPostExecute(result);
+			StaticVariables.spinnerLayout.setVisibility(View.GONE);
+			StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.footerLayout.setVisibility(View.VISIBLE);
 			markersOnMap();
 			Log.w("result",result);
 

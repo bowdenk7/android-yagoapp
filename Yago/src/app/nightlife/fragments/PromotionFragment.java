@@ -70,9 +70,15 @@ public class PromotionFragment extends Fragment{
 		promotionsListView.setAdapter(adapter);
 		adapter.notifyDataSetChanged();
 		if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB){
+			StaticVariables.spinnerLayout.setVisibility(View.GONE);
+			StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.footerLayout.setVisibility(View.VISIBLE);
 			new PromotionTypeFeedAsync(getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		}
 		else{
+			StaticVariables.spinnerLayout.setVisibility(View.GONE);
+			StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.footerLayout.setVisibility(View.VISIBLE);
 			new PromotionTypeFeedAsync(getActivity()).execute();
 		}
 		promotionsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -91,6 +97,9 @@ public class PromotionFragment extends Fragment{
 		private Context context;
 		public PromotionTypeFeedAsync(Context context) {
 			this.context = context;
+			StaticVariables.spinnerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.headerLayout.setVisibility(View.GONE);
+			StaticVariables.footerLayout.setVisibility(View.GONE);
 		}
 		@Override
 		public void onPreExecute() {
@@ -143,6 +152,9 @@ public class PromotionFragment extends Fragment{
 		@Override
 		public void onPostExecute(String result) {
 			super.onPostExecute(result);
+			StaticVariables.spinnerLayout.setVisibility(View.GONE);
+			StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.footerLayout.setVisibility(View.VISIBLE);
 			adapter.notifyDataSetChanged();
 			Log.w("result",result);
 

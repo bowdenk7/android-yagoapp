@@ -60,9 +60,15 @@ public class VenueStaffFragment extends Fragment {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB){
+					StaticVariables.spinnerLayout.setVisibility(View.GONE);
+					StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+					StaticVariables.footerLayout.setVisibility(View.VISIBLE);
 					new PurchaseAndRedeamAsync(getActivity(),StaticVariables.selected_promotion.getPromotion_pk()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 				}
 				else{
+					StaticVariables.spinnerLayout.setVisibility(View.GONE);
+					StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+					StaticVariables.footerLayout.setVisibility(View.VISIBLE);
 					new PurchaseAndRedeamAsync(getActivity(),StaticVariables.selected_promotion.getPromotion_pk()).execute();
 				}
 	
@@ -76,6 +82,9 @@ public class VenueStaffFragment extends Fragment {
 		String promo_id;
 		public PurchaseAndRedeamAsync(Context context, String promo_id) {
 			this.promo_id=promo_id;
+			StaticVariables.spinnerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.headerLayout.setVisibility(View.GONE);
+			StaticVariables.footerLayout.setVisibility(View.GONE);
 		}
 
 		@Override
@@ -137,6 +146,10 @@ public class VenueStaffFragment extends Fragment {
 		@Override
 		protected void onPostExecute(String result) {
 			Log.w("result1",result);
+			
+			StaticVariables.spinnerLayout.setVisibility(View.GONE);
+			StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.footerLayout.setVisibility(View.VISIBLE);
 			try{
 				JSONObject data = new JSONObject(result);
 				String remaining_points=data.getString("new_points_total");

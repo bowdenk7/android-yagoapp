@@ -40,9 +40,15 @@ public class ProfileFragment extends Fragment {
 		current_points=(TextView) rootView.findViewById(R.id.present_points);
 		lifetime_point=(TextView) rootView.findViewById(R.id.lifetime_point);
 		if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB){
+			StaticVariables.spinnerLayout.setVisibility(View.GONE);
+			StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.footerLayout.setVisibility(View.VISIBLE);
 			new GetUserInfoAsync(getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		}
 		else{
+			StaticVariables.spinnerLayout.setVisibility(View.GONE);
+			StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+			StaticVariables.footerLayout.setVisibility(View.VISIBLE);
 			new GetUserInfoAsync(getActivity()).execute();
 		}
 		
@@ -53,6 +59,9 @@ public class ProfileFragment extends Fragment {
 			Context context;
 			public GetUserInfoAsync(Context context) {
 				this.context=context;
+				StaticVariables.spinnerLayout.setVisibility(View.VISIBLE);
+				StaticVariables.headerLayout.setVisibility(View.GONE);
+				StaticVariables.footerLayout.setVisibility(View.GONE);
 			}
 			@Override
 			public void onPreExecute() {
@@ -97,6 +106,9 @@ public class ProfileFragment extends Fragment {
 			@Override
 			public void onPostExecute(String result) {
 				super.onPostExecute(result);
+				StaticVariables.spinnerLayout.setVisibility(View.GONE);
+				StaticVariables.headerLayout.setVisibility(View.VISIBLE);
+				StaticVariables.footerLayout.setVisibility(View.VISIBLE);
 				dynamic_text.setText(StaticVariables.first_name);
 				current_points.setText(StaticVariables.current_points);
 				lifetime_point.setText("Lifetime Score "+StaticVariables.life_time_points);
